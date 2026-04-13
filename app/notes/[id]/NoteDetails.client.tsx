@@ -5,13 +5,21 @@ import { useQuery } from '@tanstack/react-query';
 import { fetchNoteById } from '@/lib/api';
 import css from './NoteDetails/NoteDetails.client.module.css';
 
-export default function NoteDetailsClient() {
+interface NoteDetailsClientProps {
+  id: string; // Додаємо опис пропа
+}
+
+export default function NoteDetailsClient({ id: propId }: NoteDetailsClientProps) {
   const params = useParams();
-  const id = params.id as string;
+  
+  // Пріоритет: якщо є propId (з модалки), беремо його. 
+  // Якщо немає — беремо з URL (params.id)
+  const noteId = propId || (params.id as string);
 
   const { data: note, isLoading, isError, error } = useQuery({
-    queryKey: ['note', id],
-    queryFn: () => fetchNoteById(id),
+    queryKey: ['note', noteId], // Було id -> стало noteId
+    queryFn: () => fetchNoteById(noteId), // Було id -> стало noteId
+    enabled: !!noteId, // Додайте це, щоб уникнути запитів з пустим ID
     refetchOnMount: false, 
     retry: 1,
   });
