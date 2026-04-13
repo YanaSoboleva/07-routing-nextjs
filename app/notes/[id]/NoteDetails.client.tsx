@@ -3,30 +3,29 @@
 import { useParams } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import { fetchNoteById } from '@/lib/api';
-// Переконайтеся, що файл стилів лежить за цим шляхом
+// Переконайтеся, що регістр букв у назві папки та файлу збігається
 import css from './NoteDetails/NoteDetails.client.module.css';
 
 interface NoteDetailsClientProps {
-  id?: string; // Знак '?' робить проп опціональним для успішного білду
+  id?: string | string[] | undefined; // Робимо проп максимально гнучким для TS
 }
 
 export default function NoteDetailsClient({ id: propId }: NoteDetailsClientProps) {
   const params = useParams();
 
-  // Визначаємо noteId: пріоритет пропу (для модалки), інакше з URL
-  const noteId = propId || (params?.id as string);
+  // Обробляємо ID: пріоритет пропу, потім параметри URL
+  const rawId = propId || params?.id;
+  const noteId = Array.isArray(rawId) ? rawId[0] : (rawId as string);
 
   const { data: note, isLoading, isError, error } = useQuery({
     queryKey: ['note', noteId],
     queryFn: () => fetchNoteById(noteId),
-    // Запит активується лише при наявності коректного рядка ID
+    // Запит активується тільки при наявності реального рядка ID
     enabled: !!noteId && typeof noteId === 'string' && !noteId.includes('[object'),
     refetchOnMount: true,
   });
 
-  if (isLoading) {
-    return <div className={css.loader}>Завантаження деталей нотатки...</div>;
-  }
+  if (isLoading) return <div className={css.loader}>Завантаження...</div>;
 
   if (isError || !note) {
     return (
@@ -46,12 +45,11 @@ export default function NoteDetailsClient({ id: propId }: NoteDetailsClientProps
         <p className={css.text}>{note.content}</p>
       </div>
 
-      {note.tags && note.tags.length > 0 && (
+      {/* Використовуємо 'tag', оскільки 'tags' не існує в моделі */}
+      {note.tag && (
         <footer className={css.footer}>
           <div className={css.tags}>
-            {note.tags.map((tag: string) => (
-              <span key={tag} className={css.tag}>#{tag}</span>
-            ))}
+            <span className={css.tag}>#{note.tag}</span>
           </div>
         </footer>
       )}
