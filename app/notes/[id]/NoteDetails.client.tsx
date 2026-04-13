@@ -3,47 +3,31 @@
 import { useParams } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import { fetchNoteById } from '@/lib/api';
-// Переконайтеся, що шлях до CSS-модуля правильний
+// Переконайтеся, що файл стилів лежить за цим шляхом
 import css from './NoteDetails/NoteDetails.client.module.css';
 
 interface NoteDetailsClientProps {
-  id?: string; // Опціональний проп для підтримки модалок та окремих сторінок
+  id?: string; // Знак '?' робить проп опціональним для успішного білду
 }
 
 export default function NoteDetailsClient({ id: propId }: NoteDetailsClientProps) {
   const params = useParams();
 
-  /**
-   * Визначаємо noteId: 
-   * 1. Пріоритет віддаємо propId (якщо компонент рендериться в модалці)
-   * 2. Якщо пропса немає, беремо id з URL params
-   */
+  // Визначаємо noteId: пріоритет пропу (для модалки), інакше з URL
   const noteId = propId || (params?.id as string);
 
   const { data: note, isLoading, isError, error } = useQuery({
-    // queryKey залежить від noteId, тому дані оновляться при зміні нотатки без F5
     queryKey: ['note', noteId],
     queryFn: () => fetchNoteById(noteId),
-    /**
-     * Запит активується лише якщо:
-     * - noteId існує
-     * - це рядок (не Promise чи об'єкт, що викликало 404)
-     */
+    // Запит активується лише при наявності коректного рядка ID
     enabled: !!noteId && typeof noteId === 'string' && !noteId.includes('[object'),
     refetchOnMount: true,
-    retry: 1,
   });
 
-  // Стан завантаження
   if (isLoading) {
-    return (
-      <div className={css.loader}>
-        <p>Завантаження деталей нотатки...</p>
-      </div>
-    );
+    return <div className={css.loader}>Завантаження деталей нотатки...</div>;
   }
 
-  // Стан помилки або якщо нотатку не знайдено
   if (isError || !note) {
     return (
       <div className={css.error}>
@@ -52,7 +36,6 @@ export default function NoteDetailsClient({ id: propId }: NoteDetailsClientProps
     );
   }
 
-  // Основний рендер контенту
   return (
     <article className={css.container}>
       <header className={css.header}>
@@ -67,9 +50,7 @@ export default function NoteDetailsClient({ id: propId }: NoteDetailsClientProps
         <footer className={css.footer}>
           <div className={css.tags}>
             {note.tags.map((tag: string) => (
-              <span key={tag} className={css.tag}>
-                #{tag}
-              </span>
+              <span key={tag} className={css.tag}>#{tag}</span>
             ))}
           </div>
         </footer>
