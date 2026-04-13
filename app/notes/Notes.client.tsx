@@ -4,19 +4,29 @@ import { useState, useEffect } from 'react';
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { fetchNotes } from '@/lib/api';
 import { NoteList } from '@/components/NoteList/NoteList';
-import  SearchBox  from '@/components/SearchBox/SearchBox';
-import  Pagination  from '@/components/Pagination/Pagination';
-import  Modal  from '@/components/Modal/Modal';
-import  NoteForm  from '@/components/NoteForm/NoteForm';
+import SearchBox from '@/components/SearchBox/SearchBox';
+import Pagination from '@/components/Pagination/Pagination';
+import Modal from '@/components/Modal/Modal';
+import NoteForm from '@/components/NoteForm/NoteForm';
 import css from './NotesClient/Notes.client.module.css';
 
-export default function NotesClient() {
+// Додаємо інтерфейс для пропсів
+interface NotesClientProps {
+  initialTag?: string;
+}
+
+export default function NotesClient({ initialTag }: NotesClientProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const perPage = 10;
+
+  // Скидаємо сторінку на першу при зміні тегу
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [initialTag]);
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -28,11 +38,13 @@ export default function NotesClient() {
   }, [searchQuery]);
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: ['notes', debouncedSearch, currentPage],
+    // Додаємо initialTag у queryKey, щоб запит оновлювався при зміні фільтра
+    queryKey: ['notes', debouncedSearch, currentPage, initialTag],
     queryFn: () => fetchNotes({ 
       page: currentPage, 
       perPage, 
-      search: debouncedSearch 
+      search: debouncedSearch,
+      tag: initialTag // Передаємо тег у функцію запиту
     }),
     placeholderData: keepPreviousData, 
   });
@@ -43,6 +55,7 @@ export default function NotesClient() {
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' }); // Плавний скрол вгору при зміні сторінки
   };
 
   return (
@@ -68,13 +81,13 @@ export default function NotesClient() {
         <>
           <NoteList notes={data.notes} />
           
-          {data && data.totalPages > 1 && (
-          <Pagination
-           pageCount={data.totalPages} // Було total, має бути pageCount
-           onPageChange={(selected) => handlePageChange(selected + 1)} // Бібліотека react-paginate використовує 0-базовий індекс
-           forcePage={currentPage - 1} // Синхронізація поточної сторінки
-         />
-         )}
+          {data.totalPages > 1 && (
+            <Pagination
+              pageCount={data.totalPages}
+              onPageChange={(selected) => handlePageChange(selected + 1)}
+              forcePage={currentPage - 1}
+            />
+          )}
         </>
       )}
 

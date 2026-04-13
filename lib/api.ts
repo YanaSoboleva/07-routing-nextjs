@@ -30,6 +30,7 @@ export interface FetchParams {
   page?: number;
   perPage?: number;
   search?: string;
+  tag?: string;
 }
 
 export type CreateNoteData = {
@@ -42,14 +43,22 @@ export const fetchNotes = async ({
   page = 1,
   perPage = 10,
   search = '',
+  tag = '',
 }: FetchParams = {}): Promise<FetchNotesResponse> => {
-  const response = await api.get<FetchNotesResponse>('/notes', {
-    params: { 
-      page, 
-      perPage, 
-      search 
-    },
-  });
+  // Створюємо об'єкт з базовими параметрами
+  const params: any = { page, perPage };
+
+  // Додаємо пошук, тільки якщо він не порожній
+  if (search.trim()) {
+    params.search = search;
+  }
+
+  // Додаємо тег, тільки якщо це не "all" і він не порожній
+  if (tag && tag !== 'all') {
+    params.tag = tag;
+  }
+
+  const response = await api.get<FetchNotesResponse>('/notes', { params });
   return response.data;
 };
 
