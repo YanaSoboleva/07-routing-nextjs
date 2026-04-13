@@ -10,7 +10,6 @@ import Modal from '@/components/Modal/Modal';
 import NoteForm from '@/components/NoteForm/NoteForm';
 import css from './Notes.client.module.css';
 
-// Додаємо інтерфейс для пропсів
 interface NotesClientProps {
   initialTag?: string;
 }
@@ -23,7 +22,6 @@ export default function NotesClient({ initialTag }: NotesClientProps) {
 
   const perPage = 10;
 
-  // Скидаємо сторінку на першу при зміні тегу
   useEffect(() => {
     setCurrentPage(1);
   }, [initialTag]);
@@ -38,13 +36,12 @@ export default function NotesClient({ initialTag }: NotesClientProps) {
   }, [searchQuery]);
 
   const { data, isLoading, isError } = useQuery({
-    // Додаємо initialTag у queryKey, щоб запит оновлювався при зміні фільтра
     queryKey: ['notes', debouncedSearch, currentPage, initialTag],
     queryFn: () => fetchNotes({ 
       page: currentPage, 
       perPage, 
       search: debouncedSearch,
-      tag: initialTag // Передаємо тег у функцію запиту
+      tag: initialTag 
     }),
     placeholderData: keepPreviousData, 
   });
@@ -55,7 +52,7 @@ export default function NotesClient({ initialTag }: NotesClientProps) {
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-    window.scrollTo({ top: 0, behavior: 'smooth' }); // Плавний скрол вгору при зміні сторінки
+    window.scrollTo({ top: 0, behavior: 'smooth' }); 
   };
 
   return (
