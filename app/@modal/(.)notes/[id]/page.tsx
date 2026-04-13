@@ -5,22 +5,13 @@ import { useRouter } from 'next/navigation';
 import Modal from '@/components/Modal/Modal';
 import NoteDetailsClient from '@/app/notes/[id]/NoteDetails.client';
 
-interface PageProps {
-  params: Promise<{ id: string }>; 
-}
-
-export default function NoteModalPage({ params }: PageProps) {
+export default function NoteModalPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
-  
-  // Використовуємо use(), щоб розпакувати Promise params у клієнтському компоненті
-  const { id } = use(params);
-
-  const handleClose = () => {
-    router.back();
-  };
+  const { id } = use(params); // Розгортаємо Promise
 
   return (
-    <Modal onClose={handleClose}>
+    <Modal onClose={() => router.back()}>
+      {/* Тепер ми явно передаємо id, і Vercel не буде сваритися */}
       <NoteDetailsClient id={id} />
     </Modal>
   );
