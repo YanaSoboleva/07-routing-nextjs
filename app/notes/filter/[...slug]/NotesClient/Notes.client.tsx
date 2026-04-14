@@ -22,10 +22,12 @@ export default function NotesClient({ initialTag }: NotesClientProps) {
 
   const perPage = 10;
 
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [initialTag]);
-
+  // useEffect(() => {
+  // if (currentPage !== 1) {
+  //   setCurrentPage(1);
+  // }
+  // }, [initialTag, currentPage]);
+  
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedSearch(searchQuery);
