@@ -1,4 +1,4 @@
-import NotesClient from './NotesClient/Notes.client';
+import NotesClient from './Notes.client';
 
 interface FilterPageProps {
   params: { slug?: string[] };
