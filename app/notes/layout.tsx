@@ -8,7 +8,7 @@ interface FilterLayoutProps {
   sidebar: React.ReactNode; 
 }
 
-export default function FilterLayout({ children, sidebar }: FilterLayoutProps) {
+export default function FilterLayout({ children }: FilterLayoutProps) {
   return (
     <div className={css.container}>
       {/* <aside className={css.sidebar}>
