@@ -11,9 +11,9 @@ interface FilterLayoutProps {
 export default function FilterLayout({ children, sidebar }: FilterLayoutProps) {
   return (
     <div className={css.container}>
-      <aside className={css.sidebar}>
+      {/* <aside className={css.sidebar}>
         {sidebar}
-      </aside>
+      </aside> */}
 
       <main className={css.notesWrapper}>
         {children}
