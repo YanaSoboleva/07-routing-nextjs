@@ -5,7 +5,7 @@ import css from './LayoutNotes.module.css';
 
 interface FilterLayoutProps {
   children: React.ReactNode;
-  sidebar: React.ReactNode; 
+  // sidebar: React.ReactNode; 
 }
 
 export default function FilterLayout({ children }: FilterLayoutProps) {
