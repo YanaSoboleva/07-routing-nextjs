@@ -1,11 +1,9 @@
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { createNote } from '@/lib/api';
-import type { NoteTag } from '@/types/note';
+import { createNote, NoteTag, CreateNoteData } from '@/lib/api';
 import css from './NoteForm.module.css';
 
-// 1. Створюємо інтерфейс з конкретною назвою NoteFormProps
 interface NoteFormProps {
   onClose: () => void;
 }
@@ -16,10 +14,11 @@ const NoteSchema = Yup.object().shape({
     .max(50, 'Title is too long')
     .required('Title is required'),
   content: Yup.string().max(500, 'Content is too long'),
-  tag: Yup.string().required('Tag is required'),
+  tag: Yup.string()
+    .oneOf(['Todo', 'Work', 'Personal', 'Meeting', 'Shopping'], 'Invalid tag')
+    .required('Tag is required'),
 });
 
-// Використовуємо інтерфейс для типізації пропсів
 export default function NoteForm({ onClose }: NoteFormProps) {
   const queryClient = useQueryClient();
 
@@ -33,9 +32,9 @@ export default function NoteForm({ onClose }: NoteFormProps) {
 
   return (
     <Formik
-      initialValues={{ title: '', content: '', tag: '' as NoteTag }}
+      initialValues={{ title: '', content: '', tag: 'Todo' as NoteTag }}
       validationSchema={NoteSchema}
-      onSubmit={(values) => mutation.mutate(values)}
+      onSubmit={(values) => mutation.mutate(values as CreateNoteData)}
     >
       {({ isSubmitting }) => (
         <Form className={css.form}>
@@ -61,7 +60,6 @@ export default function NoteForm({ onClose }: NoteFormProps) {
               <option value="Meeting">Meeting</option>
               <option value="Shopping">Shopping</option>
             </Field>
-            {/* 2. Додано ErrorMessage для поля tag */}
             <ErrorMessage name="tag" component="span" className={css.error} />
           </div>
 
