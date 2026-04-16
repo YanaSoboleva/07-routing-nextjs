@@ -1,5 +1,5 @@
-// export type NoteTag = 'Work' | 'Personal' | 'Meeting' | 'Shopping' | 'Todo' | '';
 import { NoteTag } from '@/lib/api';
+
 export interface Note {
   id: string;
   title: string;

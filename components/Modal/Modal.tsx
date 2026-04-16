@@ -22,12 +22,11 @@ export default function Modal({ children, onClose }: ModalProps) {
   window.addEventListener('keydown', handleKeyDown);
 
   return () => {
-    document.body.style.overflow = 'auto'; // Не забудьте повернути скрол!
+    document.body.style.overflow = ''; 
     window.removeEventListener('keydown', handleKeyDown);
   };
-}, [onClose]); // Додайте залежності
+}, [onClose]); 
 
-  // В Next.js ми рендеримо портал в document.body, або створюємо div у layout.tsx
   if (!mounted) return null;
 
   return createPortal(
@@ -37,6 +36,6 @@ export default function Modal({ children, onClose }: ModalProps) {
         {children}
       </div>
     </div>,
-    document.body // Рендеримо прямо в body, щоб не шукати id
+    document.body
   );
 }
