@@ -9,9 +9,10 @@ import Pagination from '@/components/Pagination/Pagination';
 import Modal from '@/components/Modal/Modal';
 import NoteForm from '@/components/NoteForm/NoteForm';
 import css from './Notes.client.module.css';
+import { NoteTag } from '@/lib/api';
 
 interface NotesClientProps {
-  initialTag?: string;
+  initialTag?: NoteTag;
 }
 
 export default function NotesClient({ initialTag }: NotesClientProps) {
@@ -21,12 +22,6 @@ export default function NotesClient({ initialTag }: NotesClientProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const perPage = 10;
-
-  // useEffect(() => {
-  // if (currentPage !== 1) {
-  //   setCurrentPage(1);
-  // }
-  // }, [initialTag, currentPage]);
   
   useEffect(() => {
     const handler = setTimeout(() => {
