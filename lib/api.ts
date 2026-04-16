@@ -1,12 +1,25 @@
 import axios from 'axios';
 import { Note } from '@/types/note';
 
+export type NoteTag = 'Todo' | 'Work' | 'Personal' | 'Meeting' | 'Shopping' | 'all';
+
 export interface FetchNotesResponse {
   notes: Note[];
   totalPages: number;
-  page: number;
-  perPage: number;
 }
+
+export interface FetchParams {
+  page?: number;
+  perPage?: number;
+  search?: string;
+  tag?: NoteTag;
+}
+
+export type CreateNoteData = {
+  title: string;
+  content: string;
+  tag: Exclude<NoteTag, 'all'>; 
+};
 
 const TOKEN = process.env.NEXT_PUBLIC_NOTEHUB_TOKEN;
 
@@ -18,42 +31,18 @@ const api = axios.create({
   },
 });
 
-
-export interface FetchNotesResponse {
-  notes: Note[];
-  totalPages: number;
-  page: number;
-  perPage: number;
-}
-
-export interface FetchParams {
-  page?: number;
-  perPage?: number;
-  search?: string;
-  tag?: string;
-}
-
-export type CreateNoteData = {
-  title: string;
-  content: string;
-  tag: string;
-};
-
 export const fetchNotes = async ({
   page = 1,
   perPage = 10,
   search = '',
-  tag = '',
+  tag = 'all',
 }: FetchParams = {}): Promise<FetchNotesResponse> => {
-  // Створюємо об'єкт з базовими параметрами
-  const params: any = { page, perPage };
+  const params: Record<string, string | number> = { page, perPage };
 
-  // Додаємо пошук, тільки якщо він не порожній
   if (search.trim()) {
     params.search = search;
   }
 
-  // Додаємо тег, тільки якщо це не "all" і він не порожній
   if (tag && tag !== 'all') {
     params.tag = tag;
   }

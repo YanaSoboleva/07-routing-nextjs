@@ -6,6 +6,7 @@ export default async function NoteDetailsPage({ params }: { params: Promise<{ id
   const queryClient = new QueryClient();
   const { id } = await params;
 
+
   await queryClient.prefetchQuery({
     queryKey: ['note', id],
     queryFn: () => fetchNoteById(id),
@@ -13,7 +14,7 @@ export default async function NoteDetailsPage({ params }: { params: Promise<{ id
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-     <NoteDetailsClient id={id} />
+      <NoteDetailsClient id={id} />
     </HydrationBoundary>
   );
 }
